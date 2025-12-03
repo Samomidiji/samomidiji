@@ -1,0 +1,55 @@
+# Logs
+logs/
+access-logs/
+*.log
+error_log
+
+# Cache
+lscache/
+etc/cacheid
+*.cache
+
+# WordPress
+public_html/newsite/
+www/newsite/
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+
+# SSL certificates and keys
+ssl/keys/
+ssl/certs/
+ssl/csrs/
+*.key
+*.crt
+
+# Mail
+mail/
+
+# Temporary files
+tmp/
+*.tmp
+
+# Backups
+softaculous_backups/
+*.tar.gz
+*.sql
+*.zip
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# OneDrive
+~$*
+
+# Perl
+perl5/
+
+# FTP
+public_ftp/
+
