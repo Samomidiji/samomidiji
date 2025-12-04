@@ -656,6 +656,19 @@ a:hover {
   margin: 0;
 }
 
+.downloadable-image {
+  max-width: 100%;
+}
+
+@media (min-width: 769px) {
+  .downloadable-image {
+    width: 500px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 .project-image-grid {
   display: grid;
   gap: var(--spacing-md);
