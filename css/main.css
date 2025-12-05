@@ -378,6 +378,8 @@ a:hover {
 .contact-title {
   font-size: var(--font-size-h1);
   margin-bottom: 3rem;
+  font-family: "Jersey 10", sans-serif !important;
+  font-weight: 400 !important;
 }
 
 .contact-info {
