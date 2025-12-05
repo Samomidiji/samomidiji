@@ -96,23 +96,19 @@
   </nav>
 
   <!-- Hero Section -->
-  <header class="hero" id="hero">
-    <div class="hero-content">
+  <header class="hero" id="hero" style="position: relative; overflow: hidden;">
+    <canvas id="arkanoidHero" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></canvas>
+    <div class="hero-content" style="opacity: 0;">
       <h1 class="hero-name">SAM<br>OMIDIJI</h1>
       <p class="hero-subtitle">Designing and building interactive digital experiences.</p>
     </div>
-    <a href="#works" class="scroll-down" aria-label="Scroll to works section">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
   </header>
 
   <!-- Work Section -->
   <section class="work-section section-large" id="works">
     <div class="container">
       <!-- Expandable Work Section -->
-      <div class="expandable-section expanded">
+      <div class="expandable-section">
         <div class="expandable-header">
           <h3 class="expandable-title">UX Design</h3>
           <span class="expandable-toggle">▼</span>
@@ -459,5 +455,6 @@
   <script src="js/main.js"></script>
   <script src="js/animations.js"></script>
   <script src="js/contact.js"></script>
+  <script src="js/arkanoid.js"></script>
 </body>
 </html>
