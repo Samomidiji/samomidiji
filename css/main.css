@@ -192,6 +192,29 @@ a:hover {
   text-align: center;
 }
 
+#tryAgainButton {
+  position: absolute;
+  padding: 0.8rem 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: var(--font-size-small);
+  background: none;
+  border: 1px solid var(--color-text);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  z-index: 15;
+  display: none;
+}
+
+#tryAgainButton:hover {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
 .hero-content {
   max-width: 900px;
 }

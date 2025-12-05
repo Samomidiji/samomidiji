@@ -101,6 +101,12 @@ class ArkanoidHero {
     this.canvas.addEventListener('click', (e) => this.handleClick(e));
     this.canvas.addEventListener('touchstart', (e) => this.handleClick(e));
     
+    // Try Again button event listener
+    const tryAgainBtn = document.getElementById('tryAgainButton');
+    if (tryAgainBtn) {
+      tryAgainBtn.addEventListener('click', () => this.resetGame());
+    }
+    
     // Game starts in ready state (ball on paddle)
     this.gameStarted = false;
     this.ball.active = false;
@@ -448,10 +454,8 @@ class ArkanoidHero {
   }
   
   handleClick(e) {
-    if (this.showTryAgain) {
-      // Always reset game when try again is showing
-      this.resetGame();
-    } else {
+    // Launch ball on canvas click (unless game over)
+    if (!this.showTryAgain) {
       this.launchBall();
     }
   }
@@ -483,41 +487,23 @@ class ArkanoidHero {
     }, 1500);
   }
   
-  drawTryAgainButton() {
+  updateTryAgainButton() {
+    const button = document.getElementById('tryAgainButton');
+    if (!button) return;
+    
     if (this.showTryAgain) {
-      // Responsive button sizing
-      const isMobile = this.canvas.width < 768;
-      const buttonWidth = isMobile ? 160 : 200;
-      const buttonHeight = isMobile ? 40 : 50;
-      const fontSize = isMobile ? 12 : 14;
-      const buttonY = isMobile ? this.canvas.height / 2 + 140 : this.canvas.height / 2 + 180;
+      // Show and position the button
+      const rect = this.canvas.getBoundingClientRect();
+      const isMobile = rect.width < 768;
+      const buttonY = isMobile ? rect.height / 2 + 140 : rect.height / 2 + 180;
       
-      const buttonX = (this.canvas.width - buttonWidth) / 2;
-      
-      // Store button bounds for click detection
-      this.tryAgainButton = {
-        x: buttonX,
-        y: buttonY,
-        width: buttonWidth,
-        height: buttonHeight
-      };
-      
-      // Draw button background (white background)
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      this.ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-      
-      // Draw button border (matching existing buttons)
-      this.ctx.strokeStyle = '#1a1a1a';
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-      
-      // Draw button text (matching existing button style)
-      this.ctx.fillStyle = '#1a1a1a';
-      this.ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'middle';
-      this.ctx.letterSpacing = '0.05em';
-      this.ctx.fillText('TRY AGAIN', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+      button.style.display = 'block';
+      button.style.left = '50%';
+      button.style.top = `${buttonY}px`;
+      button.style.transform = 'translateX(-50%)';
+    } else {
+      // Hide the button
+      button.style.display = 'none';
     }
   }
   
@@ -527,7 +513,7 @@ class ArkanoidHero {
     this.drawBlocks();
     this.drawBall();
     this.drawPaddle();
-    this.drawTryAgainButton();
+    this.updateTryAgainButton();
     this.updateBall();
     
     requestAnimationFrame(() => this.animate());
