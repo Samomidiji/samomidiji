@@ -248,7 +248,8 @@ a:hover {
 .victory-word:nth-child(5) { animation-delay: 0.9s; }
 .victory-word:nth-child(6) { animation-delay: 1.1s; }
 
-#tryAgainButton {
+#tryAgainButton,
+#playAgainButton {
   position: absolute;
   padding: 0.8rem 2rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -266,7 +267,8 @@ a:hover {
   display: none;
 }
 
-#tryAgainButton:hover {
+#tryAgainButton:hover,
+#playAgainButton:hover {
   background-color: var(--color-text);
   color: var(--color-bg);
 }

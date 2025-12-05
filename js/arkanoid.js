@@ -13,6 +13,10 @@ class ArkanoidHero {
     this.tryAgainButton = null;
     this.victory = false;
     
+    // Delta time for frame-rate independent animation
+    this.lastTime = 0;
+    this.deltaTime = 0;
+    
     // Ball properties
     this.ball = {
       x: 0,
@@ -102,10 +106,16 @@ class ArkanoidHero {
     this.canvas.addEventListener('click', (e) => this.handleClick(e));
     this.canvas.addEventListener('touchstart', (e) => this.handleClick(e), { passive: false });
     
-    // Try Again button event listener
+    // Try Again button event listener (just relaunch ball, don't reset blocks)
     const tryAgainBtn = document.getElementById('tryAgainButton');
     if (tryAgainBtn) {
-      tryAgainBtn.addEventListener('click', () => this.resetGame());
+      tryAgainBtn.addEventListener('click', () => this.continuePlaying());
+    }
+    
+    // Play Again button event listener (full reset with all blocks)
+    const playAgainBtn = document.getElementById('playAgainButton');
+    if (playAgainBtn) {
+      playAgainBtn.addEventListener('click', () => this.resetGame());
     }
     
     // Game starts in ready state (ball on paddle)
@@ -403,10 +413,9 @@ class ArkanoidHero {
         word.style.animation = null;
       });
       
-      // Show try again button after animation completes
+      // Show play again button after animation completes
       setTimeout(() => {
-        this.showTryAgain = true;
-        this.updateTryAgainButton();
+        this.updatePlayAgainButton(true);
       }, 2500);
     }
   }
@@ -418,11 +427,38 @@ class ArkanoidHero {
     }
   }
   
+  updatePlayAgainButton(show = false) {
+    const button = document.getElementById('playAgainButton');
+    if (!button) return;
+    
+    if (show) {
+      // Show and position the button
+      const rect = this.canvas.getBoundingClientRect();
+      const isMobile = rect.width < 768;
+      const buttonY = isMobile ? rect.height / 2 + 140 : rect.height / 2 + 180;
+      
+      button.style.display = 'block';
+      button.style.left = '50%';
+      button.style.top = `${buttonY}px`;
+      button.style.transform = 'translateX(-50%)';
+    } else {
+      // Hide the button
+      button.style.display = 'none';
+    }
+  }
+  
+  hidePlayAgainButton() {
+    this.updatePlayAgainButton(false);
+  }
+  
   updateBall() {
     if (!this.gameStarted || this.gameOver || this.victory) return;
     
-    this.ball.x += this.ball.dx;
-    this.ball.y += this.ball.dy;
+    // Multiply by deltaTime and by 60 to maintain current speed at 60fps
+    const speedMultiplier = this.deltaTime * 60;
+    
+    this.ball.x += this.ball.dx * speedMultiplier;
+    this.ball.y += this.ball.dy * speedMultiplier;
     
     // Wall collision (left/right)
     if (this.ball.x + this.ball.radius > this.canvas.width || this.ball.x - this.ball.radius < 0) {
@@ -511,15 +547,36 @@ class ArkanoidHero {
     }
   }
   
+  continuePlaying() {
+    // Just hide try again button and relaunch ball (keep blocks as they are)
+    this.showTryAgain = false;
+    this.gameOver = false;
+    this.autoScrollTriggered = false;
+    
+    // Reset ball position on paddle
+    this.ball.x = this.paddle.x + this.paddle.width / 2;
+    this.ball.y = this.paddle.y - this.ball.radius;
+    this.ball.active = false;
+    this.gameStarted = false;
+    
+    // Auto launch after 1.5 seconds
+    setTimeout(() => {
+      if (!this.ball.active) {
+        this.launchBall();
+      }
+    }, 1500);
+  }
+  
   resetGame() {
-    // Hide try again button
+    // Full reset - hide buttons and victory message
     this.showTryAgain = false;
     this.gameOver = false;
     this.autoScrollTriggered = false;
     this.victory = false;
     
-    // Hide victory message
+    // Hide victory message and play again button
     this.hideVictoryMessage();
+    this.hidePlayAgainButton();
     
     // Recreate blocks
     this.createPixelText();
@@ -558,7 +615,17 @@ class ArkanoidHero {
     }
   }
   
-  animate() {
+  animate(currentTime = 0) {
+    // Calculate time since last frame (in seconds)
+    if (this.lastTime === 0) {
+      this.lastTime = currentTime;
+    }
+    this.deltaTime = (currentTime - this.lastTime) / 1000;
+    this.lastTime = currentTime;
+    
+    // Cap delta time to prevent huge jumps (e.g., when tab is inactive)
+    if (this.deltaTime > 0.1) this.deltaTime = 0.1;
+    
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
     this.drawBlocks();
@@ -567,7 +634,7 @@ class ArkanoidHero {
     this.updateTryAgainButton();
     this.updateBall();
     
-    requestAnimationFrame(() => this.animate());
+    requestAnimationFrame((time) => this.animate(time));
   }
 }
 
@@ -578,4 +645,5 @@ document.addEventListener('DOMContentLoaded', () => {
     new ArkanoidHero('arkanoidHero');
   }
 });
+
 
