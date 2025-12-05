@@ -16,8 +16,8 @@ class ArkanoidHero {
     this.ball = {
       x: 0,
       y: 100,
-      dx: 7,
-      dy: 7,
+      dx: 6,
+      dy: 6,
       radius: 8,
       color: '#6B9BD1',
       active: false
