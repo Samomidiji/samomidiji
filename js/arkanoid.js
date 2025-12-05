@@ -11,6 +11,7 @@ class ArkanoidHero {
     this.autoScrollTriggered = false;
     this.showTryAgain = false;
     this.tryAgainButton = null;
+    this.victory = false;
     
     // Ball properties
     this.ball = {
@@ -99,7 +100,7 @@ class ArkanoidHero {
     this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
     this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
     this.canvas.addEventListener('click', (e) => this.handleClick(e));
-    this.canvas.addEventListener('touchstart', (e) => this.handleClick(e));
+    this.canvas.addEventListener('touchstart', (e) => this.handleClick(e), { passive: false });
     
     // Try Again button event listener
     const tryAgainBtn = document.getElementById('tryAgainButton');
@@ -372,14 +373,53 @@ class ArkanoidHero {
           }
           
           block.active = false;
+          
+          // Check if all blocks are cleared
+          this.checkVictory();
           break;
         }
       }
     }
   }
   
+  checkVictory() {
+    const activeBlocks = this.blocks.filter(block => block.active).length;
+    if (activeBlocks === 0 && !this.victory) {
+      this.victory = true;
+      this.showVictoryMessage();
+    }
+  }
+  
+  showVictoryMessage() {
+    const victoryMsg = document.getElementById('victoryMessage');
+    if (victoryMsg) {
+      victoryMsg.style.display = 'block';
+      
+      // Reset animation for all words
+      const words = victoryMsg.querySelectorAll('.victory-word');
+      words.forEach(word => {
+        word.style.animation = 'none';
+        word.offsetHeight; // Trigger reflow
+        word.style.animation = null;
+      });
+      
+      // Show try again button after animation completes
+      setTimeout(() => {
+        this.showTryAgain = true;
+        this.updateTryAgainButton();
+      }, 2500);
+    }
+  }
+  
+  hideVictoryMessage() {
+    const victoryMsg = document.getElementById('victoryMessage');
+    if (victoryMsg) {
+      victoryMsg.style.display = 'none';
+    }
+  }
+  
   updateBall() {
-    if (!this.gameStarted || this.gameOver) return;
+    if (!this.gameStarted || this.gameOver || this.victory) return;
     
     this.ball.x += this.ball.dx;
     this.ball.y += this.ball.dy;
@@ -454,6 +494,10 @@ class ArkanoidHero {
   }
   
   handleClick(e) {
+    // Prevent default to stop Safari bounce
+    if (e.type === 'touchstart') {
+      e.preventDefault();
+    }
     // Launch ball on canvas click (unless game over)
     if (!this.showTryAgain) {
       this.launchBall();
@@ -472,6 +516,13 @@ class ArkanoidHero {
     this.showTryAgain = false;
     this.gameOver = false;
     this.autoScrollTriggered = false;
+    this.victory = false;
+    
+    // Hide victory message
+    this.hideVictoryMessage();
+    
+    // Recreate blocks
+    this.createPixelText();
     
     // Reset ball position on paddle
     this.ball.x = this.paddle.x + this.paddle.width / 2;
