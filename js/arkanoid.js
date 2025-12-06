@@ -27,6 +27,7 @@ class ArkanoidHero {
       color: '#6B9BD1',
       active: false
     };
+    this.baseBallSpeed = 9;
     
     // Paddle properties
     this.paddle = {
@@ -34,12 +35,17 @@ class ArkanoidHero {
       height: 15,
       x: 0,
       y: 0,
-      color: '#1a1a1a'
+      color: '#1a1a1a',
+      recoilOffset: 0,
+      targetRecoil: 0
     };
     
     // Pixel blocks for "SAMUEL OMIDIJI"
     this.blocks = [];
     this.blockSize = 24; // Size of each pixel block (increased for bolder look)
+    
+    // Power-up balls
+    this.extraBalls = [];
     
     // Navigation bar height
     this.navHeight = 0;
@@ -59,17 +65,22 @@ class ArkanoidHero {
         // Mobile - larger blocks for better visibility
         this.blockSize = Math.max(10, Math.floor(this.canvas.width / 35));
         this.ball.radius = 6;
-        this.ball.dx = Math.abs(this.ball.dx) > 0 ? (this.ball.dx > 0 ? 7 : -7) : 7;
-        this.ball.dy = Math.abs(this.ball.dy) > 0 ? (this.ball.dy > 0 ? 7 : -7) : 7;
+        this.baseBallSpeed = 7;
+        this.ball.dx = Math.abs(this.ball.dx) > 0 ? (this.ball.dx > 0 ? this.baseBallSpeed : -this.baseBallSpeed) : this.baseBallSpeed;
+        this.ball.dy = Math.abs(this.ball.dy) > 0 ? (this.ball.dy > 0 ? this.baseBallSpeed : -this.baseBallSpeed) : this.baseBallSpeed;
         this.paddle.width = 90;
       } else {
         // Desktop
         this.blockSize = 24;
         this.ball.radius = 8;
-        this.ball.dx = Math.abs(this.ball.dx) > 0 ? (this.ball.dx > 0 ? 9 : -9) : 9;
-        this.ball.dy = Math.abs(this.ball.dy) > 0 ? (this.ball.dy > 0 ? 9 : -9) : 9;
+        this.baseBallSpeed = 9;
+        this.ball.dx = Math.abs(this.ball.dx) > 0 ? (this.ball.dx > 0 ? this.baseBallSpeed : -this.baseBallSpeed) : this.baseBallSpeed;
+        this.ball.dy = Math.abs(this.ball.dy) > 0 ? (this.ball.dy > 0 ? this.baseBallSpeed : -this.baseBallSpeed) : this.baseBallSpeed;
         this.paddle.width = 120;
       }
+      
+      // Keep the main ball speed consistent with the base speed
+      this.normalizeBallSpeed(this.ball);
       
       this.createPixelText();
     };
@@ -297,6 +308,30 @@ class ArkanoidHero {
         currentX += (pattern[0].length + 2) * this.blockSize;
       }
     }
+    
+    // Add power-ups: replace 5 random blocks with colored power-ups
+    this.addPowerUps();
+  }
+  
+  addPowerUps() {
+    const activeBlocks = this.blocks.filter(b => b.active);
+    if (activeBlocks.length < 5) return;
+    
+    // Power-up definitions
+    const powerUps = [
+      { color: '#FF8C00', extraBalls: 2 },  // Orange - 2 balls
+      { color: '#32CD32', extraBalls: 4 },  // Green - 4 balls
+      { color: '#FFD700', extraBalls: 6 },  // Yellow - 6 balls
+      { color: '#C0C0C0', extraBalls: 8 },  // Silver - 8 balls
+      { color: '#FFD700', extraBalls: 10 }  // Gold - 10 balls
+    ];
+    
+    // Randomly select 5 blocks to become power-ups
+    const shuffled = activeBlocks.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 5; i++) {
+      shuffled[i].color = powerUps[i].color;
+      shuffled[i].powerUp = powerUps[i].extraBalls;
+    }
   }
   
   handleMouseMove(e) {
@@ -336,16 +371,32 @@ class ArkanoidHero {
   }
   
   drawBall() {
+    // Draw main ball
     this.ctx.beginPath();
     this.ctx.arc(this.ball.x, this.ball.y, this.ball.radius, 0, Math.PI * 2);
     this.ctx.fillStyle = this.ball.color;
     this.ctx.fill();
     this.ctx.closePath();
+    
+    // Draw extra balls
+    for (let extraBall of this.extraBalls) {
+      if (extraBall.active) {
+        this.ctx.beginPath();
+        this.ctx.arc(extraBall.x, extraBall.y, extraBall.radius, 0, Math.PI * 2);
+        this.ctx.fillStyle = extraBall.color;
+        this.ctx.fill();
+        this.ctx.closePath();
+      }
+    }
   }
   
   drawPaddle() {
+    // Update paddle recoil animation
+    this.paddle.recoilOffset += (this.paddle.targetRecoil - this.paddle.recoilOffset) * 0.2;
+    if (Math.abs(this.paddle.recoilOffset) < 0.1) this.paddle.recoilOffset = 0;
+    
     this.ctx.fillStyle = this.paddle.color;
-    this.ctx.fillRect(this.paddle.x, this.paddle.y, this.paddle.width, this.paddle.height);
+    this.ctx.fillRect(this.paddle.x, this.paddle.y + this.paddle.recoilOffset, this.paddle.width, this.paddle.height);
   }
   
   drawBlocks() {
@@ -357,38 +408,101 @@ class ArkanoidHero {
     }
   }
   
-  checkCollision() {
-    // Check collision with blocks
+  normalizeBallSpeed(ball) {
+    const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+    if (speed === 0) {
+      ball.dx = this.baseBallSpeed;
+      ball.dy = this.baseBallSpeed;
+      return;
+    }
+    const scale = this.baseBallSpeed / speed;
+    ball.dx *= scale;
+    ball.dy *= scale;
+    
+    // Prevent near-horizontal shots that can loop forever
+    const minDy = this.baseBallSpeed * 0.25;
+    if (Math.abs(ball.dy) < minDy) {
+      const dySign = ball.dy === 0 ? 1 : Math.sign(ball.dy);
+      const dxSign = ball.dx === 0 ? 1 : Math.sign(ball.dx);
+      ball.dy = minDy * dySign;
+      const remaining = Math.max(this.baseBallSpeed * this.baseBallSpeed - minDy * minDy, 0.01);
+      ball.dx = Math.sqrt(remaining) * dxSign;
+    }
+  }
+  
+  handleBlockCollision(ball) {
+    if (!ball.active) return false;
+    
     for (let block of this.blocks) {
-      if (block.active) {
-        if (
-          this.ball.x + this.ball.radius > block.x &&
-          this.ball.x - this.ball.radius < block.x + block.width &&
-          this.ball.y + this.ball.radius > block.y &&
-          this.ball.y - this.ball.radius < block.y + block.height
-        ) {
-          // Determine collision side
-          const ballCenterX = this.ball.x;
-          const ballCenterY = this.ball.y;
-          const blockCenterX = block.x + block.width / 2;
-          const blockCenterY = block.y + block.height / 2;
-          
-          const dx = ballCenterX - blockCenterX;
-          const dy = ballCenterY - blockCenterY;
-          
-          if (Math.abs(dx) > Math.abs(dy)) {
-            this.ball.dx = -this.ball.dx;
-          } else {
-            this.ball.dy = -this.ball.dy;
-          }
-          
-          block.active = false;
-          
-          // Check if all blocks are cleared
-          this.checkVictory();
-          break;
+      if (!block.active) continue;
+      
+      if (
+        ball.x + ball.radius > block.x &&
+        ball.x - ball.radius < block.x + block.width &&
+        ball.y + ball.radius > block.y &&
+        ball.y - ball.radius < block.y + block.height
+      ) {
+        const blockCenterX = block.x + block.width / 2;
+        const blockCenterY = block.y + block.height / 2;
+        const dx = ball.x - blockCenterX;
+        const dy = ball.y - blockCenterY;
+        
+        if (Math.abs(dx) > Math.abs(dy)) {
+          // Horizontal bounce
+          ball.dx = -ball.dx;
+          const overlap = ball.radius + block.width / 2 - Math.abs(dx);
+          ball.x += dx > 0 ? overlap : -overlap;
+        } else {
+          // Vertical bounce
+          ball.dy = -ball.dy;
+          const overlap = ball.radius + block.height / 2 - Math.abs(dy);
+          ball.y += dy > 0 ? overlap : -overlap;
         }
+        
+        this.normalizeBallSpeed(ball);
+        
+        if (block.powerUp) {
+          this.spawnExtraBalls(block.x + block.width / 2, block.y + block.height / 2, block.powerUp);
+        }
+        
+        block.active = false;
+        this.checkVictory();
+        return true;
       }
+    }
+    return false;
+  }
+  
+  checkCollision() {
+    // Main ball collisions
+    if (this.ball.active) {
+      this.handleBlockCollision(this.ball);
+    }
+    
+    // Extra balls collisions
+    for (let extraBall of this.extraBalls) {
+      if (!extraBall.active) continue;
+      this.handleBlockCollision(extraBall);
+    }
+  }
+  
+  spawnExtraBalls(x, y, count) {
+    // Use the same speed and properties as the main ball
+    const speed = this.baseBallSpeed;
+    const color = this.ball.color;
+    const radius = this.ball.radius;
+    
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 / count) * i;
+      this.extraBalls.push({
+        x: x,
+        y: y,
+        dx: Math.cos(angle) * speed,
+        dy: Math.sin(angle) * speed,
+        radius: radius,
+        color: color,
+        active: true
+      });
     }
   }
   
@@ -457,75 +571,133 @@ class ArkanoidHero {
     // Multiply by deltaTime and by 60 to maintain current speed at 60fps
     const speedMultiplier = this.deltaTime * 60;
     
-    this.ball.x += this.ball.dx * speedMultiplier;
-    this.ball.y += this.ball.dy * speedMultiplier;
-    
-    // Wall collision (left/right)
-    if (this.ball.x + this.ball.radius > this.canvas.width || this.ball.x - this.ball.radius < 0) {
-      this.ball.dx = -this.ball.dx;
+    // Update main ball only if active
+    if (this.ball.active) {
+      this.ball.x += this.ball.dx * speedMultiplier;
+      this.ball.y += this.ball.dy * speedMultiplier;
     }
     
-    // Top collision with nav bar as ceiling
-    if (this.ball.y - this.ball.radius < this.navHeight) {
-      this.ball.y = this.navHeight + this.ball.radius;
-      this.ball.dy = -this.ball.dy;
+    // Main ball collisions (only if active)
+    if (this.ball.active) {
+      // Wall collision (left/right)
+      if (this.ball.x + this.ball.radius > this.canvas.width || this.ball.x - this.ball.radius < 0) {
+        this.ball.dx = -this.ball.dx;
+        this.normalizeBallSpeed(this.ball);
+      }
+      
+      // Top collision with nav bar as ceiling
+      if (this.ball.y - this.ball.radius < this.navHeight) {
+        this.ball.y = this.navHeight + this.ball.radius;
+        this.ball.dy = -this.ball.dy;
+        this.normalizeBallSpeed(this.ball);
+      }
+      
+      // Paddle collision
+      if (
+        this.ball.y + this.ball.radius >= this.paddle.y &&
+        this.ball.y - this.ball.radius <= this.paddle.y + this.paddle.height &&
+        this.ball.x + this.ball.radius >= this.paddle.x &&
+        this.ball.x - this.ball.radius <= this.paddle.x + this.paddle.width &&
+        this.ball.dy > 0
+      ) {
+        // Add angle based on where ball hits paddle
+        const hitPos = (this.ball.x - this.paddle.x) / this.paddle.width;
+        this.ball.dx = (hitPos - 0.5) * 10;
+        this.ball.dy = -Math.abs(this.ball.dy);
+        this.normalizeBallSpeed(this.ball);
+        
+        // Paddle recoil effect
+        this.paddle.targetRecoil = 8;
+        setTimeout(() => { this.paddle.targetRecoil = 0; }, 100);
+      }
     }
     
-    // Paddle collision
-    if (
-      this.ball.y + this.ball.radius >= this.paddle.y &&
-      this.ball.y - this.ball.radius <= this.paddle.y + this.paddle.height &&
-      this.ball.x + this.ball.radius >= this.paddle.x &&
-      this.ball.x - this.ball.radius <= this.paddle.x + this.paddle.width &&
-      this.ball.dy > 0
-    ) {
-      // Add angle based on where ball hits paddle
-      const hitPos = (this.ball.x - this.paddle.x) / this.paddle.width;
-      this.ball.dx = (hitPos - 0.5) * 10;
-      this.ball.dy = -Math.abs(this.ball.dy);
+    // Update extra balls (same order as main ball: update -> collisions -> paddle)
+    for (let i = this.extraBalls.length - 1; i >= 0; i--) {
+      const extraBall = this.extraBalls[i];
+      if (!extraBall.active) continue;
+      
+      // Update position (same as main ball)
+      const speedMultiplier = this.deltaTime * 60;
+      extraBall.x += extraBall.dx * speedMultiplier;
+      extraBall.y += extraBall.dy * speedMultiplier;
+      
+      // Wall collision (same as main ball)
+      if (extraBall.x + extraBall.radius > this.canvas.width || extraBall.x - extraBall.radius < 0) {
+        extraBall.dx = -extraBall.dx;
+        this.normalizeBallSpeed(extraBall);
+      }
+      
+      // Top collision with nav bar (same as main ball)
+      if (extraBall.y - extraBall.radius < this.navHeight) {
+        extraBall.y = this.navHeight + extraBall.radius;
+        extraBall.dy = -extraBall.dy;
+        this.normalizeBallSpeed(extraBall);
+      }
+      
+      // Paddle collision (same as main ball)
+      if (
+        extraBall.y + extraBall.radius >= this.paddle.y &&
+        extraBall.y - extraBall.radius <= this.paddle.y + this.paddle.height &&
+        extraBall.x + extraBall.radius >= this.paddle.x &&
+        extraBall.x - extraBall.radius <= this.paddle.x + this.paddle.width &&
+        extraBall.dy > 0
+      ) {
+        // Add angle based on where ball hits paddle (same as main ball)
+        const hitPos = (extraBall.x - this.paddle.x) / this.paddle.width;
+        extraBall.dx = (hitPos - 0.5) * 10;
+        extraBall.dy = -Math.abs(extraBall.dy);
+        this.normalizeBallSpeed(extraBall);
+        
+        // Paddle recoil effect
+        this.paddle.targetRecoil = 8;
+        setTimeout(() => { this.paddle.targetRecoil = 0; }, 100);
+      }
+      
+      // Check if extra ball falls off bottom
+      if (extraBall.y - extraBall.radius > this.canvas.height) {
+        // Remove this ball
+        this.extraBalls.splice(i, 1);
+        
+        // Check if this was the last ball (no main ball active and no other extra balls)
+        const hasActiveBalls = this.ball.active || this.extraBalls.some(b => b.active && b.y - b.radius <= this.canvas.height);
+        
+        if (!hasActiveBalls && !this.autoScrollTriggered) {
+          // This was the last ball - trigger game over
+          this.autoScrollTriggered = true;
+          this.gameOver = true;
+          this.gameStarted = false;
+          this.showTryAgain = true;
+          this.scrollToContent();
+        }
+      }
     }
     
-    // Ball falls off bottom - show try again button and scroll
+    // Ball falls off bottom - only trigger game over if no extra balls remain
     if (this.ball.y - this.ball.radius > this.canvas.height) {
-      if (!this.autoScrollTriggered) {
+      this.ball.active = false;
+      
+      // Check if there are any extra balls still active
+      const hasActiveBalls = this.extraBalls.some(ball => ball.active && ball.y - ball.radius <= this.canvas.height);
+      
+      if (!hasActiveBalls && !this.autoScrollTriggered) {
+        // No balls left - this was the last ball, game over
         this.autoScrollTriggered = true;
         this.gameOver = true;
-        this.ball.active = false;
         this.gameStarted = false;
         this.showTryAgain = true;
         this.scrollToContent();
       }
-    } else if (this.ball.y > this.canvas.height * 0.8 && !this.autoScrollTriggered) {
-      // Start smooth scrolling as ball approaches bottom
-      this.followBall();
     }
     
     this.checkCollision();
-  }
-  
-  followBall() {
-    // Smoothly scroll page to follow the falling ball
-    const heroSection = document.getElementById('hero');
-    const currentScroll = window.scrollY;
-    const heroBottom = heroSection ? heroSection.offsetHeight : 0;
-    const ballProgress = this.ball.y / this.canvas.height;
-    
-    if (ballProgress > 0.8 && currentScroll < heroBottom) {
-      const targetScroll = (ballProgress - 0.8) * heroBottom * 5;
-      window.scrollTo({
-        top: Math.min(targetScroll, heroBottom),
-        behavior: 'smooth'
-      });
-    }
   }
   
   scrollToContent() {
     // Complete the scroll to the works section
     const worksSection = document.getElementById('works');
     if (worksSection) {
-      setTimeout(() => {
-        worksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 300);
+      worksSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
   
@@ -553,6 +725,9 @@ class ArkanoidHero {
     this.gameOver = false;
     this.autoScrollTriggered = false;
     
+    // Clear extra balls
+    this.extraBalls = [];
+    
     // Reset ball position on paddle
     this.ball.x = this.paddle.x + this.paddle.width / 2;
     this.ball.y = this.paddle.y - this.ball.radius;
@@ -577,6 +752,9 @@ class ArkanoidHero {
     // Hide victory message and play again button
     this.hideVictoryMessage();
     this.hidePlayAgainButton();
+    
+    // Clear extra balls
+    this.extraBalls = [];
     
     // Recreate blocks
     this.createPixelText();
@@ -645,5 +823,3 @@ document.addEventListener('DOMContentLoaded', () => {
     new ArkanoidHero('arkanoidHero');
   }
 });
-
-

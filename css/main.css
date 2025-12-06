@@ -221,23 +221,22 @@ a:hover {
   display: inline-block;
   opacity: 0;
   transform: scale(0.5);
-  margin: 0 0.3em;
-  animation: popIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  margin: 0 0.15em;
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform, opacity;
 }
 
 @keyframes popIn {
   0% {
     opacity: 0;
-    transform: scale(0.5);
-    filter: blur(10px);
+    transform: scale(0.5) translateY(20px);
   }
-  50% {
-    filter: blur(5px);
+  60% {
+    transform: scale(1.05) translateY(-5px);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
+    transform: scale(1) translateY(0);
   }
 }
 
