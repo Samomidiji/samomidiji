@@ -50,6 +50,10 @@ class ArkanoidHero {
     // Navigation bar height
     this.navHeight = 0;
     
+    // Keyboard controls
+    this.keys = { left: false, right: false };
+    this.paddleSpeed = 900;
+    
     this.setupCanvas();
     this.init();
   }
@@ -116,6 +120,10 @@ class ArkanoidHero {
     this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
     this.canvas.addEventListener('click', (e) => this.handleClick(e));
     this.canvas.addEventListener('touchstart', (e) => this.handleClick(e), { passive: false });
+    
+    // Keyboard listeners
+    document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+    document.addEventListener('keyup', (e) => this.handleKeyUp(e));
     
     // Try Again button event listener (just relaunch ball, don't reset blocks)
     const tryAgainBtn = document.getElementById('tryAgainButton');
@@ -408,6 +416,45 @@ class ArkanoidHero {
     }
   }
   
+  handleKeyDown(e) {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
+      this.keys.left = true;
+      e.preventDefault();
+    } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+      this.keys.right = true;
+      e.preventDefault();
+    }
+  }
+  
+  handleKeyUp(e) {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
+      this.keys.left = false;
+      e.preventDefault();
+    } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+      this.keys.right = false;
+      e.preventDefault();
+    }
+  }
+  
+  updatePaddleFromKeys() {
+    const move = (this.keys.left ? -1 : 0) + (this.keys.right ? 1 : 0);
+    if (move === 0) return;
+    
+    const speed = this.canvas.width < 768 ? 700 : 900;
+    this.paddle.x += move * speed * this.deltaTime;
+    
+    // Clamp within bounds
+    if (this.paddle.x < 0) this.paddle.x = 0;
+    if (this.paddle.x + this.paddle.width > this.canvas.width) {
+      this.paddle.x = this.canvas.width - this.paddle.width;
+    }
+    
+    // Keep idle ball centered on paddle
+    if (!this.ball.active) {
+      this.ball.x = this.paddle.x + this.paddle.width / 2;
+    }
+  }
+  
   normalizeBallSpeed(ball) {
     const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
     if (speed === 0) {
@@ -567,6 +614,9 @@ class ArkanoidHero {
   
   updateBall() {
     if (!this.gameStarted || this.gameOver || this.victory) return;
+    
+    // Apply keyboard-based paddle movement
+    this.updatePaddleFromKeys();
     
     // Multiply by deltaTime and by 60 to maintain current speed at 60fps
     const speedMultiplier = this.deltaTime * 60;
