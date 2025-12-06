@@ -4,6 +4,7 @@ class ArkanoidHero {
     if (!this.canvas) return;
     
     this.ctx = this.canvas.getContext('2d');
+    this.canvas.style.touchAction = 'pan-y';
     
     // Game state
     this.gameStarted = false;
@@ -360,7 +361,6 @@ class ArkanoidHero {
   }
   
   handleTouchMove(e) {
-    e.preventDefault();
     const rect = this.canvas.getBoundingClientRect();
     const touch = e.touches[0];
     const touchX = touch.clientX - rect.left;
@@ -752,10 +752,6 @@ class ArkanoidHero {
   }
   
   handleClick(e) {
-    // Prevent default to stop Safari bounce
-    if (e.type === 'touchstart') {
-      e.preventDefault();
-    }
     // Launch ball on canvas click (unless game over)
     if (!this.showTryAgain) {
       this.launchBall();
