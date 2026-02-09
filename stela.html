@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S.T.E.L.L.A - Samuel Omidiji</title>
+  <meta name="description" content="S.T.E.L.L.A - Smart Travel Experiences Leading Local Adventures">
+  <link href="css/normalize.css" rel="stylesheet" type="text/css">
+  <link href="css/main.css" rel="stylesheet" type="text/css">
+  <link href="images/favicon.png" rel="shortcut icon" type="image/x-icon">
+  <link href="images/webclip.png" rel="apple-touch-icon">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .stella-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 86px;
+      padding: 80px 100px;
+    }
+
+    .stella-hero {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .stella-hero h1 {
+      font-size: 90px;
+      line-height: 1;
+      margin-bottom: 16px;
+      font-weight: 400;
+      font-family: "Jersey 10", sans-serif;
+    }
+
+    .stella-hero p {
+      font-size: 18px;
+      color: #191e3b;
+      opacity: 0.8;
+    }
+
+    .stella-section {
+      margin-bottom: 160px;
+    }
+
+    .stella-section h2 {
+      font-size: 48px;
+      margin-bottom: 24px;
+      font-weight: 400;
+      color: #191e3b;
+      font-family: "Jersey 10", sans-serif;
+    }
+
+    .stella-section p {
+      font-size: 18px;
+      line-height: 1.5;
+      color: #191e3b;
+    }
+
+    .opportunity-grid {
+      display: grid;
+      grid-template-columns: 1fr 600px;
+      gap: 60px;
+      align-items: start;
+      padding-top: 38px;
+      margin-bottom: 160px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 31px;
+    }
+
+    .stat-card {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .stat-card.tall {
+      height: 175px;
+    }
+
+    .stat-card h3 {
+      font-size: 96px;
+      line-height: 1;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #191e3b;
+    }
+
+    .stat-card p {
+      font-size: 16px;
+      line-height: 1.4;
+      color: #191e3b;
+      margin: 0;
+    }
+
+    .stat-card.pink { background: #ffcdf8; }
+    .stat-card.blue { background: #c2e5ff; }
+    .stat-card.peach { background: #ffedd2; }
+    .stat-card.green { background: #cdf4d3; }
+
+    .feature-item {
+      margin-bottom: 24px;
+    }
+
+    .feature-item strong {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .flowchart-wrapper {
+      margin: 60px 0;
+    }
+
+    .flowchart-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 160px;
+    }
+
+    .prototype-section {
+      background: #fff4e2;
+      border-radius: 38px;
+      padding: 60px 80px;
+      margin: 160px 0;
+    }
+
+    .prototype-section h2 {
+      text-align: center;
+      margin-bottom: 60px;
+      background-clip: unset;
+      -webkit-background-clip: unset;
+      color: rgba(26, 26, 26, 1);
+      font-weight: 400;
+      font-family: "Jersey 10", sans-serif;
+    }
+
+    .prototype-row {
+      display: flex;
+      gap: 100px;
+      margin-bottom: 80px;
+      align-items: flex-start;
+    }
+
+    .prototype-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .prototype-label {
+      flex: 0 0 300px;
+    }
+
+    .prototype-label h3 {
+      font-size: 24px;
+      line-height: 1.2;
+      color: #191e3b;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .prototype-images {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    .prototype-image-item {
+      text-align: center;
+    }
+
+    .prototype-image-item img {
+      width: 127px;
+      height: auto;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .prototype-image-item p {
+      font-size: 15px;
+      color: #191e3b;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    @media (max-width: 1200px) {
+      .stella-container {
+        border-radius: 40px;
+        padding: 60px 40px;
+      }
+
+      .opportunity-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .prototype-row {
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .prototype-label {
+        flex: 1;
+      }
+
+      .prototype-images {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stella-container {
+        border-radius: 20px;
+        padding: 40px 24px;
+      }
+
+      .stella-hero h1 {
+        font-size: 32px;
+      }
+
+      .stella-section h2 {
+        font-size: 28px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .stat-card.tall {
+        grid-row: span 1;
+      }
+
+      .stat-card h3 {
+        font-size: 64px;
+      }
+
+      .prototype-section {
+        padding: 40px 24px;
+      }
+
+      .prototype-row {
+        gap: 20px;
+      }
+
+      .prototype-images {
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">SAM OMIDIJI</a>
+      <ul class="nav-links">
+        <li><a href="index.html#works" class="nav-link">Works</a></li>
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+        <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+      </ul>
+      <button class="mobile-menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div style="padding: 120px 40px 80px;">
+    <div class="stella-container">
+      
+      <!-- Hero -->
+      <div class="stella-hero">
+        <h1>S.T.E.L.L.A</h1>
+        <p>Smart Travel Experiences Leading Local Adventures</p>
+      </div>
+
+      <!-- The Backstory -->
+      <section class="stella-section">
+        <h2>The Backstory</h2>
+        <p>When travelers visit iconic destinations like Rome and tour historic landmarks such as the Colosseum, many opt for guided tours that include audio headsets and a live guide. While these tours offer structure and commentary, they also present notable limitations. According to tour‑comparison guides, tours managed by the official provider often consist of large groups that "can be 25 or even 50 people with a single guide" which can feel impersonal and restrict interaction. One key drawback is the rigidity of the pace—tourists must follow the guide's schedule and typically cannot skip portions that hold less interest for them. Additionally, because groups are large, the environment does not always encourage questions about the tour, the city, or local recommendations, which reduces opportunities for deeper engagement and personalization.</p>
+      </section>
+
+      <!-- This Present an Opportunity -->
+      <section class="stella-section">
+        <div class="opportunity-grid">
+          <div>
+            <h2>The Opportunity</h2>
+            <p>Walking tours are the most popular way to explore culture, history, and connect with locals—but traditional formats often fall short. Large group sizes, fixed schedules, and limited interaction make it difficult for travelers to engage meaningfully or explore at their own pace. There's a clear opportunity for an app that delivers self-guided, on-demand walking tours with rich audio storytelling, real-time navigation, and local recommendations. This solution would combine the flexibility of solo exploration with the depth of guided experiences—allowing travelers to connect more personally with the places they visit.</p>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card pink tall">
+              <h3>70%</h3>
+              <p>of travelers want guided tours</p>
+            </div>
+            <div class="stat-card blue">
+              <h3>80%</h3>
+              <p>Generation Z</p>
+            </div>
+            <div class="stat-card peach">
+              <h3>81%</h3>
+              <p>Millenials</p>
+            </div>
+            <div class="stat-card green">
+              <h3>89%</h3>
+              <p>Want local guide experience</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section class="stella-section">
+        <h2>How it works</h2>
+        <p>There are two primary entry points to begin a walking tour experience:</p>
+        <br>
+        <p><strong>1. Location-Based Trigger:</strong> When a traveler arrives in Rome and nears the Colosseum, they receive a timely push notification inviting them to launch the app and begin an interactive walking tour of the site. This creates a seamless, in-the-moment discovery experience.</p>
+        <br>
+        <p><strong>2. Trips Page Integration:</strong> Leveraging the user's itinerary, the app proactively surfaces available tours based on their upcoming travel destination and dates. For example, if a user has a trip planned to Rome, the app will suggest relevant walking tours ahead of time, allowing them to plan or preview their experience.</p>
+      </section>
+
+      <!-- Features -->
+      <section class="stella-section">
+        <h2>Features</h2>
+        <div class="feature-item">
+          <strong>Smart Notifications</strong>
+          <p>Push notifications when entering areas with available tours</p>
+        </div>
+        <div class="feature-item">
+          <strong>Interactive Map</strong>
+          <p>Tap points of interest to instantly start audio tours</p>
+        </div>
+        <div class="feature-item">
+          <strong>AI-Powered Audio</strong>
+          <p>Real-time text-to-speech with dynamic content generation</p>
+        </div>
+        <div class="feature-item">
+          <strong>Multimodal Interaction</strong>
+          <p>Ask questions, request repeats, or get recommendations</p>
+        </div>
+      </section>
+
+      <!-- User Flow -->
+      <div class="flowchart-wrapper">
+        <img src="https://www.figma.com/api/mcp/asset/a0295942-8199-4267-9e9d-e8e52972b493" alt="User Flow Diagram" loading="lazy">
+      </div>
+
+      <!-- Prototype Section -->
+      <div class="prototype-section">
+        <h2>Prototype</h2>
+
+        <!-- Entry Points -->
+        <div class="prototype-row">
+          <div class="prototype-label">
+            <h3>Entry point to the tour experience</h3>
+          </div>
+          <div class="prototype-images">
+            <div class="prototype-image-item">
+              <img src="https://www.figma.com/api/mcp/asset/fa1c16b5-e868-4eff-9faf-bc5edcc42791" alt="Location based Alert" loading="lazy">
+              <p>Location based Alert</p>
+            </div>
+            <div class="prototype-image-item">
+              <img src="https://www.figma.com/api/mcp/asset/73c38934-5d30-47dd-8c21-0df2d344438f" alt="Trips Page" loading="lazy">
+              <p>Trips Page</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Map -->
+        <div class="prototype-row">
+          <div class="prototype-label">
+            <h3>Interactive map to visualize available tour</h3>
+          </div>
+          <div class="prototype-images">
+            <img src="https://www.figma.com/api/mcp/asset/5261f4e5-7066-467c-b24d-fb540723338f" alt="Map view" loading="lazy" style="width: 127px; height: auto;">
+            <img src="https://www.figma.com/api/mcp/asset/541e360a-4d4e-41c8-81f1-08545e7d59bc" alt="Map with selection" loading="lazy" style="width: 127px; height: auto;">
+            <img src="https://www.figma.com/api/mcp/asset/2f7a3a96-001c-47b5-a6e6-d9189a55f3bc" alt="Tour details" loading="lazy" style="width: 127px; height: auto;">
+          </div>
+        </div>
+
+        <!-- Audio Tours -->
+        <div class="prototype-row">
+          <div class="prototype-label">
+            <h3>Audio tours with transcription</h3>
+          </div>
+          <div class="prototype-images">
+            <img src="https://www.figma.com/api/mcp/asset/926f5071-4287-45a9-aee8-e02f2573f56f" alt="Audio loading state" loading="lazy" style="width: 127px; height: auto;">
+            <img src="https://www.figma.com/api/mcp/asset/522e5be1-f8b9-46fa-9fa5-0f2f5b7c418a" alt="Audio playback" loading="lazy" style="width: 127px; height: auto;">
+            <img src="https://www.figma.com/api/mcp/asset/dbcf791c-b135-4323-a2d4-0d3c6b5510c9" alt="Audio transcript" loading="lazy" style="width: 127px; height: auto;">
+          </div>
+        </div>
+
+        <!-- Multimodal Interaction -->
+        <div class="prototype-row">
+          <div class="prototype-label">
+            <h3>Multimodal interaction</h3>
+          </div>
+          <div class="prototype-images">
+            <div class="prototype-image-item">
+              <img src="https://www.figma.com/api/mcp/asset/77d45c8c-4b37-4471-b3df-2ec08de95aeb" alt="AI assistant" loading="lazy">
+            </div>
+            <div class="prototype-image-item">
+              <img src="https://www.figma.com/api/mcp/asset/67a9d933-2095-451f-8c02-4fb440f3ddea" alt="Camera recognition" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conclusion -->
+      <section class="stella-section">
+        <h2>Conclusion</h2>
+        <p>S.T.E.L.L.A solves the limitations of traditional tours by delivering a self-guided, AI-powered experience that adapts to every traveler's pace and curiosity. The product meets a proven demand for flexible cultural exploration while creating a scalable new engagement channel for the business. By integrating itinerary data, real-time location, and multimodal AI, S.T.E.L.L.A elevates both user experience and commercial opportunity — transforming guided tours into something personal, interactive and timeless.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <section class="contact-section section-large" id="contact">
+    <div class="container">
+      <div class="contact-content">
+        <h2 class="contact-title">Let's turn your next idea into an experience.</h2>
+        <p class="section-subtitle">Tell me what you're imagining and I'll reply with how we can make it real</p>
+        
+        <div class="contact-info">
+          <div class="email-wrapper">
+            <a href="mailto:omidijisamuel96@gmail.com" class="email-link">omidijisamuel96@gmail.com</a>
+            <button class="copy-btn" aria-label="Copy email to clipboard">Copy</button>
+          </div>
+          
+          <div class="available-badge">Now Booking Collaborations</div>
+        </div>
+
+        <ul class="social-links">
+          <li><a href="https://dribbble.com/SamOmidiji" target="_blank" rel="noopener" class="social-link" aria-label="Dribbble"><img src="images/dribbble.svg" alt="Dribbble" loading="lazy"></a></li>
+          <li><a href="https://twitter.com/samomidiji" target="_blank" rel="noopener" class="social-link" aria-label="Twitter"><img src="images/twitter.svg" alt="Twitter" loading="lazy"></a></li>
+          <li><a href="https://www.instagram.com/samomidiji/" target="_blank" rel="noopener" class="social-link" aria-label="Instagram"><img src="images/instagram.svg" alt="Instagram" loading="lazy"></a></li>
+          <li><a href="https://www.linkedin.com/in/samuel-omidiji-585863127/" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn"><img src="images/linkedin.svg" alt="LinkedIn" loading="lazy"></a></li>
+          <li><a href="https://github.com/Samomidiji" target="_blank" rel="noopener" class="social-link" aria-label="GitHub"><img src="images/github.svg" alt="GitHub" loading="lazy"></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>All rights reserved, SAM OMIDIJI ©2024</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/contact.js"></script>
+</body>
+</html>

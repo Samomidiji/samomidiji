@@ -337,6 +337,7 @@ a:hover {
   height: auto;
   display: block;
   transition: transform 0.3s ease;
+  border-radius: 14px;
 }
 
 .work-item:hover img {
@@ -777,8 +778,13 @@ a:hover {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
+.project-image-grid.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
 @media (max-width: 768px) {
-  .project-image-grid.grid-2 {
+  .project-image-grid.grid-2,
+  .project-image-grid.grid-3 {
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
   }
